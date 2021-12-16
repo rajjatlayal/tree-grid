@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ChangeEventArgs } from '@syncfusion/ej2-dropdowns';
 import { TreeGridComponent , EditService , ToolbarService , PageService } from '@syncfusion/ej2-angular-treegrid';
 import { sampleData } from './sampledata';
-import { ContextMenuComponent, MenuEventArgs, MenuItemModel } from '@syncfusion/ej2-angular-navigations';// import { MyAlertDialogComponent } from './my-alert-dialog/my-alert-dialog.component';
+import { ContextMenuComponent, MenuEventArgs, MenuItemModel } from '@syncfusion/ej2-angular-navigations';
 import { Browser } from '@syncfusion/ej2-base';
 
 @Component({
