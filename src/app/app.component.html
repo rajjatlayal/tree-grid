@@ -320,40 +320,49 @@
 <div class="col-lg-9 control-section" >
   <!-- <button mat-button (click)="openCustomDialog()">Open custom dialog</button> -->
 
- 
+<!--  
   <div class="contextmenu-section" style="padding: 3%; background: #eee; width: 100%; display: flex;">
     <div id="contextmenu-control" style="width: 50%;">
         <div id="contextmenutarget">{{content}}</div>
-        <ejs-contextmenu #contextmenu target='#contextmenutarget' [items]='menuItems' (select)='addDisabled($event)' (created)='onCreated()'    ></ejs-contextmenu>
+        <ejs-contextmenu #contextmenu target='#contextmenutarget' [items]='menuItems' (select)='addDisabled($event)' (created)='onCreated()'     
+        ></ejs-contextmenu>
     </div>
-  <!-- </div> -->
-  <!-- <div class="contextmenu-section" style="padding: 3%; background: #eee; width: 50%;"> -->
+  
     <div id="contextmenu-control" style="width: 50%;">
         <div id="contextmenutarget1">{{content1}}</div>
         <ejs-contextmenu #contextmenu2 target='#contextmenutarget1' [items]='menuItems1' (select)='addDisabled1($event)' (created)='onCreated1()'    ></ejs-contextmenu>
     </div>
-  </div>
+  </div> -->
 
-<!-- <div style="padding: 3%; background: #eee; display: flex;" (click)="openCustomDialog()">
-  <input
-  type="checkbox" value="Menu1"
-  /> 
-  <p>Menu 1</p>
-</div> -->
-   
-  <ejs-treegrid #treegrid [dataSource]='data' [pageSettings]='pageSettings'    height='350' childMapping='subtasks' [treeColumnIndex]='1' allowPaging='true'  [allowFiltering]='editColumn'    [filterSettings]='filterSettings'  [editSettings]='editSettings' [toolbar]='toolbar'
+
+  <!-- <ejs-treegrid #treegrid [dataSource]='data' [pageSettings]='pageSettings'    height='600' childMapping='Crew' [treeColumnIndex]='1'   [allowFiltering]='editColumn'    [filterSettings]='filterSettings'  [enableVirtualization]='400' [editSettings]='editSettings' [toolbar]='toolbar'
+  (contextMenuOpen)="contextMenuOpen($event)"
+  (contextMenuClick)="contextMenuClick($event)"     [contextMenuItems]="contextMenuItems"
+  > -->
+  <ejs-treegrid #treegrid [dataSource]='data' [pageSettings]='pageSettings'    height='400' childMapping='Crew' [treeColumnIndex]='1'   [allowFiltering]='editColumn'    [filterSettings]='filterSettings'  [enableVirtualization]='400' [editSettings]='editSettings' [toolbar]='toolbar'
+  
   >
-      
     
     <e-columns>
-          <e-column field='taskID' headerText='Task ID' isPrimaryKey='true' width='90' textAlign='Right' [validationRules]='taskidrules'></e-column>
+          <!-- <e-column field='taskID' headerText='Task ID' isPrimaryKey='true' width='90' textAlign='Right' [validationRules]='taskidrules'></e-column>
           <e-column field='taskName' headerText='Task Name' editType='stringedit' width= 220  [validationRules]='tasknamerules'></e-column>
           <e-column field='startDate' headerText='Start Date' width='140'  editType='datepickeredit' format='yMd' [validationRules]='startdaterules' textAlign='Right'></e-column>
-          <e-column field='duration' headerText='Duration' width='100' textAlign='Right' editType= 'numericedit' [validationRules]='durationrules' [edit]='edit'></e-column>
+          <e-column field='duration' headerText='Duration' width='100' textAlign='Right' editType= 'numericedit' [validationRules]='durationrules' [edit]='edit'></e-column> -->
           <!-- <e-column *ngFor="let col of columns" field='{{col.fieldName}}' 
           headerText='{{col.headerName}}' width='100'> 
         </e-column>   -->
     
+        <e-column field='TaskID' headerText='Player Jersey' width='120' textAlign='Right' isPrimaryKey='true' ></e-column>
+        <e-column field='FIELD1' headerText='Player Name' width='120' editType='stringedit'  ></e-column>
+        <e-column field='FIELD2' headerText='Year' width='100' textAlign='Right' format='y'  textAlign='Right'></e-column>
+        <e-column field='FIELD3' headerText='Stint' width='120' textAlign='Right'></e-column>
+        <e-column field='FIELD4' headerText='TMID' width='120' textAlign='Right'></e-column>
+
+
+
+
+
+
         </e-columns>
      
 
@@ -397,7 +406,15 @@
         </div>
     </ng-template> -->
   </ejs-treegrid>
-  
+  <ejs-contextmenu
+    id="contextmenu"
+    #contextmenu
+    target=".e-content"
+    [items]="menuItems"
+    (select)="onSelect($event)"
+    (beforeItemRender)="itemBeforeEvent($event)"
+  ></ejs-contextmenu
+  >
 </div>
 
 

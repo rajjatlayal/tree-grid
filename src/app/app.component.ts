@@ -1,33 +1,39 @@
-import { sampleData } from './sampledata';
-import { ContextMenuComponent, MenuEventArgs, MenuItemModel } from '@syncfusion/ej2-angular-navigations';
+import { dataSource, sampleData, virtualData } from './sampledata';
+import { BeforeOpenCloseMenuEventArgs, ContextMenuComponent, MenuEventArgs, MenuItemModel } from '@syncfusion/ej2-angular-navigations';
 import { Component, Inject, ViewChild, ViewEncapsulation } from '@angular/core';
-import { CommandColumnService, ContextMenuService, EditService, FilterService, PageService, ToolbarService, TreeGridComponent } from '@syncfusion/ej2-angular-treegrid';
+import { CommandColumnService, ContextMenuService, EditService, FilterService, PageService, ToolbarService, TreeGridComponent, VirtualScrollService } from '@syncfusion/ej2-angular-treegrid';
 import { ChangeEventArgs, DropDownList, DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
-import { Browser } from '@syncfusion/ej2-base';
-import { DialogEditEventArgs, SaveEventArgs } from '@syncfusion/ej2-angular-grids';
+import { Browser, closest, createElement } from '@syncfusion/ej2-base';
+import { DialogEditEventArgs, EditSettingsModel, SaveEventArgs } from '@syncfusion/ej2-angular-grids';
 import { FormGroup } from '@angular/forms';
 
+import { createCheckBox } from '@syncfusion/ej2-buttons';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    providers: [EditService ,FilterService, ToolbarService , PageService,    CommandColumnService,ContextMenuService
+    providers: [EditService ,FilterService, ToolbarService , PageService,VirtualScrollService,    CommandColumnService,ContextMenuService
     ],
-    encapsulation: ViewEncapsulation.None
+    // encapsulation: ViewEncapsulation.None
 
 })
 export class AppComponent {
-
+    public text:any;
     public editColumn=false
+    public editingColumn=false
+
     @ViewChild('contextmenu')
     public contextmenu!: ContextMenuComponent;
     @ViewChild('contextmenu')
     public contextmenu2!: ContextMenuComponent;
     addData='false'
+
+  public editing!: EditSettingsModel;
+  isInitialLoad = true;
     public menuItems: MenuItemModel[] = [
         {
             text: 'EditCol',
-            iconCss: 'e-cm-icons e-cut'
+            iconCss: 'c-custom', 
         },
         {
             text: 'NewCol',
@@ -111,6 +117,7 @@ export class AppComponent {
     content1!: string;
 
     editParams: { params: { format: string; }; } | undefined;
+  contextMenuItems!: (string | { text: string; iconCss: string; target: string; id: string; })[];
 
   constructor  (
     // @Inject('sourceFiles') private sourceFiles: any
@@ -125,7 +132,7 @@ export class AppComponent {
 
 
     ngOnInit(): void {
-        this.data = sampleData;
+        // this.data = virtualData;
         // this.editSettings ={ allowEditing: true, allowAdding: true, allowDeleting: true, mode:"Cell"}; 
         // this.toolbar = ['Add', 'Delete', 'Update', 'Cancel'];
         // this.taskidrules = { required: true , number: true};
@@ -136,8 +143,57 @@ export class AppComponent {
         // this.ddlfields = { text: 'name' , value: 'id'};
         // this.d1data= [{ id: 'CellEditing', name: 'Cell Editing' }, {id: 'RowEditing', name: 'Row Editing'} ]
  
- 
- 
+        if (virtualData.length === 0) {
+          dataSource();
+      }
+      this.data = virtualData;
+      this.contextMenuItems = [
+        {
+          text: 'EditCol',
+          iconCss: 'c-custom',
+          target: '.e-content',
+          id: 'selection',
+        },
+        {
+          text: 'NewCol',
+          iconCss: 'c-custom',
+          target: '.e-content',
+          id: 'drag',
+        },
+        {
+          text: 'DelCol',
+          iconCss: 'c-custom',
+          target: '.e-content',
+          id: 'selection',
+        },
+        {
+          text: 'ChooseCol',
+          iconCss: 'c-custom',
+          target: '.e-content',
+          id: 'selection',
+        }, {
+          text: 'FreezeCol',
+          iconCss: 'c-custom',
+          target: '.e-content',
+          id: 'selection',
+        },
+        {
+          text: 'FilterCol',
+          iconCss: 'c-custom',
+          target: '.e-content',
+          id: 'selection',
+        }, {
+          text: 'MultiSort',
+          iconCss: 'c-custom',
+          target: '.e-content',
+          id: 'selection',
+        },
+      ];
+
+   
+      // this.editing = { allowDeleting: true, allowEditing: true };
+      // this.filterSettings = { type: 'FilterBar', hierarchyMode: 'Parent', mode: 'Immediate' };
+
     }
 
 
@@ -202,7 +258,7 @@ openCustomDialog() {}
         }
         else if(args.item.text === 'EditCol'){
             console.log('date')
-            this.data = sampleData;
+            this.data = virtualData;
             this.editColumn=false
             this.pageSettings = { pageCount: 5 };
 
@@ -236,7 +292,7 @@ openCustomDialog() {}
             // this.editColumn=true
             this.editColumn=true
 
-            this.data = sampleData;
+            this.data = virtualData;
             this.pageSettings = { pageCount: 5 };
 
             this.filterSettings = { type: 'FilterBar', hierarchyMode: 'Parent', mode: 'Immediate' };
@@ -298,13 +354,13 @@ openCustomDialog() {}
     public addDisabled1  (args: MenuEventArgs) {
     }
 
-    public rowSelected(args:any) {
-        if (this.isCommandClick) {
-          debugger;
-          this.isCommandClick = false;
-          args.cancel = true;
-        }
-      }
+    // public rowSelected(args:any) {
+    //     if (this.isCommandClick) {
+    //       debugger;
+    //       this.isCommandClick = false;
+    //       args.cancel = true;
+    //     }
+    //   }
 
       actionBegin(args: SaveEventArgs): void {
         if (args.requestType === 'beginEdit' || args.requestType === 'add') {
@@ -339,6 +395,167 @@ openCustomDialog() {}
         this.treegrid.clearFiltering();
         this.dropDownFilter.value = 'All';
     }
+
+
+    //...........before close.............//
+    contextMenuOpen(args: { element: { querySelectorAll: (arg0: string) => any; }; }) {
+      if (this.isInitialLoad) {
+        this.isInitialLoad = false;
+        var parentNode: any[] = [];
+        var customEle = args.element.querySelectorAll('.c-custom');
+        if (customEle.length) {
+          customEle.forEach((innerEle: { parentElement: any; }) => {
+            parentNode.push(innerEle.parentElement);
+          });
+          console.log(parentNode);
+          parentNode.forEach((ele) => {
+            var text = ele.textContent;
+            ele.innerText = '';
+            let inputEle = createElement('input') as HTMLInputElement;
+            console.log('inputEle',inputEle)
+            // inputEle.nodeType='checkbox';
+            inputEle.type = 'checkbox';
+  
+            inputEle.setAttribute('class', 'e-checkbox');
+            ele.prepend(inputEle);
+            let spanEle = createElement('span');
+            spanEle.textContent = text;
+            spanEle.setAttribute('class', 'e-checkboxspan');
+            ele.appendChild(spanEle);
+          });
+        }
+      }
+    }
+    contextMenuClick(args: { event: { target: { classList: { contains: (arg0: string) => any; }; }; }; element: { querySelector: (arg0: string) => any; }; }) {
+      if (args.event.target.classList.contains('e-checkboxspan')) {
+        var checkbox = args.element.querySelector('.e-checkbox');
+        checkbox.checked = !checkbox.checked;
+      }
+
+      console.log('data',args.event.target)
+    }
+    public itemBeforeEvent(args: MenuEventArgs) {
+
+      console.log('dataqqqq',args)
+      // if (args.item.text !== 'EditCol') {
+        let shortCutSpan: HTMLElement = createElement('span');
+        this. text= args.item.text;
+        args.element.textContent = '';
+  
+        let inputEle = createElement('input')as HTMLInputElement;
+        inputEle.type = 'checkbox';
+        inputEle.setAttribute('class', 'e-checkbox');
+        shortCutSpan.innerText = this.text;
+  
+        args.element.appendChild(inputEle);
+        args.element.appendChild(shortCutSpan);
+      // }
+    }
+  
+    onSelect(args: { event: { target: { classList: { contains: (arg0: string) => any; }; }; }; item: { text: string; }; element: { querySelector: (arg0: string) => any; }; }) {
+      // if (
+      //   !args.event.target.classList.contains('e-checkbox') &&
+      //   args.item.text !== 'EditCol'
+      // ) {
+        var checkbox = args.element.querySelector('.e-checkbox');
+        console.log('args',args)
+
+        console.log('checkbox',checkbox)
+      // }
+
+      if (args.item.text == 'EditCol') {
+        this.editColumn=false
+
+        console.log('checkbox.checked',checkbox.checked)
+
+        if(checkbox.checked==true){
+          console.log('args.item.text1',args.item.text)
+
+          if (this.treegrid.getSelectedRecords().length) {
+
+            // this.treegrid.startEdit();
+  
+           this.editingColumn=true
+  
+            this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true , mode: 'Dialog' };
+            this.pageSettings = { pageCount: 5 };
+            this.editParams = {  params: { format: 'n' } };
+            // this.tasknamerules = { required: true};
+            // this.taskidrules = { required: true};
+            // this.startdaterules = { date: true};
+            // this.enddaterules = { date: true};
+          
+            // this.durationrules = {number: true , min: 0};
+            this.ddlfields = { text: 'name' , value: 'id'};
+            this.d1data= [{ id: 'CellEditing', name: 'Cell Editing' }, {id: 'RowEditing', name: 'Row Editing'} ]
+  
+            // checkbox.checked = !checkbox.checked;
+  
+           checkbox.checked=true
+          } else {
+            alert('Select any row');
+            checkbox.checked=false
+            this.editingColumn=false
+            this.editSettings={}
+          }
+        }
+        else{
+          console.log('checkbox.checked111',checkbox.checked)
+
+          this.editSettings = { allowEditing: false, allowAdding: false, allowDeleting: false , mode: 'Dialog' };
+        }
+
+        
+      }
+      else if (args.item.text ==='FilterCol'){
+     
+
+        console.log('date11',this.editColumn)
+        // this.editColumn=true
+        this.editColumn=true
+        if (virtualData.length === 0) {
+          dataSource();
+      }
+
+      
+              this.data = virtualData;
+        this.pageSettings = { pageCount: 5 };
+
+        this.filterSettings = { type: 'FilterBar', hierarchyMode: 'Parent', mode: 'Immediate' };
+        this.templateOptions = {
+            create: (args: { element: Element }) => {
+                let dd: HTMLInputElement = document.createElement('input');
+                dd.id = 'duration';
+                return dd;
+            },
+            write: (args: { element: Element }) => {
+                let dataSource: string[] = ['All', '1', '3', '4', '5', '6', '8', '9'];
+                this.dropDownFilter = new DropDownList({
+                    dataSource: dataSource,
+                    value: 'All',
+                    change: (e: ChangeEventArgs) => {
+                        let valuenum: any = +e.value;
+                        let id: any = <string>this.dropDownFilter.element.id;
+                        let value: any = <string>e.value;
+                        if ( value !== 'All') {
+                            this.treegrid.filterByColumn( id, 'equal', valuenum );
+                        } else {
+                            this.treegrid.removeFilteredColsByField(id);
+                        }
+                    }
+                });
+                this.dropDownFilter.appendTo('#duration');
+         }
+        };
+
+        this.fields1 = { text: 'mode' , value: 'id'};
+        this.d1data= [{ id: 'Parent', mode: 'Parent' },
+                      { id: 'Child', mode: 'Child' },
+                      { id: 'Both', mode: 'Both' },
+                      { id: 'None', mode: 'None' },]
+    }
+    }
+
 }
 
 export interface ITaskModel {

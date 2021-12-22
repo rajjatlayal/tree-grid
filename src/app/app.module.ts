@@ -7,7 +7,10 @@ import { DropDownListAllModule, MultiSelectAllModule } from '@syncfusion/ej2-ang
 import { ContextMenuModule } from '@syncfusion/ej2-angular-navigations';
 import { DialogModule } from '@syncfusion/ej2-angular-popups';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ButtonAllModule , CheckBoxAllModule} from '@syncfusion/ej2-angular-buttons';
+import { ButtonAllModule ,ButtonModule, CheckBoxAllModule} from '@syncfusion/ej2-angular-buttons';
+import { enableRipple } from '@syncfusion/ej2-base';
+import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
+
 export class MaterialModule { }
 
 @NgModule({
@@ -16,7 +19,7 @@ export class MaterialModule { }
   ],
   imports: [
     BrowserModule, TreeGridModule,DropDownListAllModule,MultiSelectAllModule,ContextMenuModule,
-    DialogModule,FormsModule,ReactiveFormsModule,ButtonAllModule,CheckBoxAllModule
+    DialogModule,FormsModule,ReactiveFormsModule,ButtonAllModule,CheckBoxAllModule,CheckBoxModule
   ],
  
   providers: [],
