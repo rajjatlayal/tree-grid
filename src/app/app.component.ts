@@ -255,7 +255,10 @@ export class AppComponent {
       this.deleteDialogObj.hide();
       this.flag = true;
       this.treegrid.deleteRecord();
+      if(this.editingColumn==false){
+        this.editSettings = { allowEditing: false, allowAdding: false, allowDeleting: false , mode: 'Dialog' };
 
+      }
     }
   
     deleteDlgCancelButtonClick(args: any) {
@@ -339,19 +342,16 @@ export class AppComponent {
 
       if (args.item.text == 'EditCol') {
         this.editColumn=false
-        console.log('this.editingColumn',this.editingColumn)
 
-        console.log('checkbox.checked',checkbox.checked)
 
         if(checkbox.checked==true){
-          console.log('args.item.text1',args.item.text)
 
           if (this.treegrid.getSelectedRecords().length) {
             console.log('args.item.text11',args.item.text)
 
-            // this.treegrid.startEdit();
-            if( this.editingColumn==false){
-              this.editingColumn=true
+            // // this.treegrid.startEdit();
+            // if( this.editingColumn==false){
+            //   this.editingColumn=true
   
               this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true , mode: 'Dialog' };
               this.pageSettings = { pageCount: 5 };
@@ -366,23 +366,27 @@ export class AppComponent {
               this.d1data= [{ id: 'CellEditing', name: 'Cell Editing' }, {id: 'RowEditing', name: 'Row Editing'} ]
     
               // checkbox.checked = !checkbox.checked;
-    
+              alert('You can edit any row by clicking on it');
+
+              this.editingColumn=true
+
              checkbox.checked=true
             } else {
               alert('Select any row');
               checkbox.checked=false
-              this.editingColumn=false
+              // this.editingColumn=false
               this.editSettings={}
             }
             }
-  else{
-    this.editingColumn=false
+  // else{
+  //   this.editingColumn=false
 
-  }
+  // }
     
-        }
+  
         else{
           console.log('checkbox.checked111',checkbox.checked)
+          this.editingColumn=false
 
           this.editSettings = { allowEditing: false, allowAdding: false, allowDeleting: false , mode: 'Dialog' };
         }
@@ -443,23 +447,26 @@ export class AppComponent {
     }
 
     else if (args.item.text ==='DelCol'){
-      this.editingColumn=false
+      // this.editingColumn=false
       this.editColumn=false
 
       if(checkbox.checked==true){
 
         if (this.treegrid.getSelectedRecords().length) {
-          this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Dialog' };
        
           this.initilaizeTarget();
     
           this.deleteDialogObj.show();
+          this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Dialog' };
+
           checkbox.checked=false
 
         }
         else{
           alert('Select any row');
           checkbox.checked=false
+          this.editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Dialog' };
+
           // this.editSettings = { allowEditing: false, allowAdding: false, allowDeleting: false, mode: 'Dialog' };
   
         }
