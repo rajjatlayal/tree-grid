@@ -340,7 +340,7 @@
   (contextMenuClick)="contextMenuClick($event)"     [contextMenuItems]="contextMenuItems"
   > -->
   <ejs-treegrid #treegrid [dataSource]='data' [pageSettings]='pageSettings'    height='400' childMapping='Crew' [treeColumnIndex]='1'   [allowFiltering]='editColumn'    [filterSettings]='filterSettings'  [enableVirtualization]='400' [editSettings]='editSettings' [toolbar]='toolbar'
-  
+ 
   >
     
     <e-columns>
@@ -413,8 +413,19 @@
     [items]="menuItems"
     (select)="onSelect($event)"
     (beforeItemRender)="itemBeforeEvent($event)"
-  ></ejs-contextmenu
-  >
+  ></ejs-contextmenu  >
+
+  <div #container class='root-container'></div>
+
+  <!-- <ejs-dialog id='deleteDialog' header="Delete record" #deleteDialog [showCloseIcon]=true [target]="target"  [width]=400 [height]=150 [visible]=false isModal='true' [buttons]='deleteButtons'>
+    <ng-template #content>
+         <div>Are you sure you want to delete this record ?</div>
+     </ng-template>
+</ejs-dialog> -->
+
+
+<ejs-dialog id='deleteDialog' #deleteDialog  header="Delete record"  [target]="target"  [width]=300 [height]=150 [visible]=false isModal='true' [showCloseIcon]=true content='Are you sure you want to delete this record ?'
+[target]='targetElement' width='250px'  [buttons]='deleteButtons'> </ejs-dialog>
 </div>
 
 
